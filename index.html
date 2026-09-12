@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Wi-Fi</title>
+    <title>K&K Wi-Fi</title>
 
     <style>
         * {
@@ -69,7 +69,27 @@
             word-break: break-word;
         }
 
-        button {
+        .password-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .password {
+            flex: 1;
+        }
+
+        .small-button {
+            border: 0;
+            background: transparent;
+            color: #007aff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .main-button {
             width: 100%;
             border: 0;
             border-radius: 16px;
@@ -82,12 +102,38 @@
             color: white;
         }
 
-        button:active {
+        .main-button:active {
             transform: scale(0.98);
         }
 
-        .instructions {
+        .qr-section {
             margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e5e7;
+        }
+
+        .qr-section h2 {
+            font-size: 18px;
+            margin: 0 0 8px;
+        }
+
+        .qr-section p {
+            font-size: 13px;
+            color: #6e6e73;
+            margin: 0 0 16px;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+        }
+
+        #qrcode img {
+            border-radius: 12px;
+        }
+
+        .instructions {
+            margin-top: 24px;
             text-align: left;
             color: #6e6e73;
             font-size: 14px;
@@ -102,52 +148,137 @@
 
     <div class="wifi-icon">📶</div>
 
-    <h1>Welcome</h1>
+    <h1>K&K Wi-Fi</h1>
 
     <div class="subtitle">
-        Connect to our Wi-Fi
+        Welcome! Connect to our Wi-Fi
     </div>
 
     <div class="info">
         <div class="label">Wi-Fi Network</div>
-        <div class="value" id="network">KK (2.4G)</div>
+        <div class="value" id="network">YOUR_WIFI_NAME</div>
     </div>
 
     <div class="info">
         <div class="label">Password</div>
-        <div class="value" id="password">020122K@Ki</div>
+
+        <div class="password-row">
+            <div class="value password" id="password">
+                ••••••••••••
+            </div>
+
+            <button class="small-button" onclick="togglePassword()">
+                Show
+            </button>
+        </div>
     </div>
 
-    <button onclick="copyPassword()">
+    <button class="main-button" onclick="copyPassword()">
         Copy Password
     </button>
 
+    <div class="qr-section">
+
+        <h2>Quick Connect</h2>
+
+        <p>
+            Scan this QR code to connect to Wi-Fi
+        </p>
+
+        <div id="qrcode"></div>
+
+    </div>
+
     <div class="instructions">
         <strong>iPhone</strong><br>
-        Tap "Copy Password", then open
+        Tap <strong>Copy Password</strong>, then open
         Settings → Wi-Fi and select the network.
         Paste the password when prompted.
+        <br><br>
+
+        <strong>Android</strong><br>
+        Scan the QR code above to connect automatically.
     </div>
 
 </div>
 
+<!-- QR Code library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <script>
-function copyPassword() {
-    const password =
-        document.getElementById("password").textContent;
 
-    navigator.clipboard.writeText(password).then(() => {
+    /*
+     * ==========================================
+     * CHANGE YOUR WI-FI INFORMATION HERE
+     * ==========================================
+     */
 
-        const button = document.querySelector("button");
+    const WIFI_NAME = "KK (2.4G)";
+    const WIFI_PASSWORD = "020122K@Ki";
 
-        button.textContent = "✓ Password Copied";
+    /*
+     * ==========================================
+     * DO NOT EDIT BELOW THIS LINE
+     * ==========================================
+     */
 
-        setTimeout(() => {
-            button.textContent = "Copy Password";
-        }, 2000);
+    document.getElementById("network").textContent = WIFI_NAME;
 
+    let passwordVisible = false;
+
+    function togglePassword() {
+
+        const passwordElement =
+            document.getElementById("password");
+
+        const button =
+            document.querySelector(".small-button");
+
+        if (passwordVisible) {
+
+            passwordElement.textContent = "••••••••••••";
+            button.textContent = "Show";
+            passwordVisible = false;
+
+        } else {
+
+            passwordElement.textContent = WIFI_PASSWORD;
+            button.textContent = "Hide";
+            passwordVisible = true;
+
+        }
+    }
+
+    function copyPassword() {
+
+        navigator.clipboard.writeText(WIFI_PASSWORD).then(() => {
+
+            const button =
+                document.querySelector(".main-button");
+
+            button.textContent = "✓ Password Copied";
+
+            setTimeout(() => {
+                button.textContent = "Copy Password";
+            }, 2000);
+
+        });
+    }
+
+    /*
+     * Generate Wi-Fi QR code
+     */
+
+    const wifiQR =
+        `WIFI:T:WPA;S:${WIFI_NAME};P:${WIFI_PASSWORD};;`;
+
+    new QRCode(document.getElementById("qrcode"), {
+        text: wifiQR,
+        width: 190,
+        height: 190,
+        correctLevel: QRCode.CorrectLevel.M
     });
-}
+
 </script>
 
 </body>
